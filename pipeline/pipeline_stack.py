@@ -52,6 +52,7 @@ class PipelineStack(core.Stack):
                         "commands": [
                             "apt-get update -y",
                             "npm install -g aws-cdk",
+                            "pip install --upgrade pip",
                             "pip install -r requirements.txt",
                             "cdk bootstrap"
                         ]
@@ -59,13 +60,17 @@ class PipelineStack(core.Stack):
                     "pre_build": {
                         "commands": [
                             "cdk ls",
-                            "cdk synth",
-                            "cdk diff"
+                            "cdk synth"
                         ]
                     },
                     "build": {
                         "commands": [
-                            "cdk deploy"
+                            "cdk diff || (cdk deploy)"
+                        ]
+                    },
+                    "post_build": {
+                        "commands": [
+                            "cdk diff"
                         ]
                     }
                 }
