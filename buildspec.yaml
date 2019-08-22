@@ -13,4 +13,4 @@ phases:
   pre_build:
     commands: 
       - cdk ls
-      - cdk synth *
+      - cdk synth
