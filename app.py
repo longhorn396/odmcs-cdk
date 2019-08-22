@@ -2,10 +2,9 @@
 
 from aws_cdk import core
 
-from odmcs_cdk.odmcs_cdk_stack import OdmcsCdkStack
+from pipeline.pipeline_stack import PipelineStack
 
 
 app = core.App()
-OdmcsCdkStack(app, "odmcs-cdk")
-
+PipelineStack(app, "odmcs-pipeline")
 app.synth()

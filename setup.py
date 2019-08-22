@@ -15,11 +15,16 @@ setuptools.setup(
 
     author="author",
 
-    package_dir={"": "odmcs_cdk"},
+    package_dir={"": "pipeline"},
     packages=setuptools.find_packages(where="odmcs_cdk"),
 
     install_requires=[
         "aws-cdk.core",
+        "aws-cdk.aws_codebuild",
+        "aws-cdk.aws_codepipeline",
+        "aws-cdk.aws_codepipeline_actions",
+        "aws-cdk.aws_iam",
+        "aws-cdk.aws_s3"
     ],
 
     python_requires=">=3.6",
