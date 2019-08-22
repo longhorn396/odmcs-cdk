@@ -13,16 +13,19 @@ from aws_cdk import (
 
 class PipelineStack(core.Stack):
     """
-    pass
+    AWS CodePipeline and supporting resources
     """
 
     def __init__(self, scope, unique_id, **kwargs):
         """
-        pass
+        Construct resources
         """
         super().__init__(scope, unique_id, **kwargs)
 
+        # Artifact passed from one stage to the next
         source_output = codepipeline.Artifact("SourceOutput")
+
+        # GitHub repository this code is hosted in
         github_repo = actions.GitHubSourceAction(
             action_name="SourceAction",
             oauth_token=core.SecretValue.secrets_manager("GitHub_to_CodePipeline_OAUTH",
@@ -33,6 +36,8 @@ class PipelineStack(core.Stack):
             branch="master",
             trigger=actions.GitHubTrigger.WEBHOOK
         )
+
+        # CodeBuild Project to go into the pipeline
         pipeline_project = codebuild.PipelineProject(
             self,
             "project",
@@ -57,6 +62,11 @@ class PipelineStack(core.Stack):
                             "cdk synth",
                             "cdk diff"
                         ]
+                    },
+                    "build": {
+                        "commands": [
+                            "cdk deploy"
+                        ]
                     }
                 }
             }),
@@ -65,16 +75,22 @@ class PipelineStack(core.Stack):
             ),
             project_name="odmcs-build"
         )
+
+        # Grant CloudFormation permissions to the project
         pipeline_project.add_to_role_policy(iam.PolicyStatement(
             actions=["cloudformation:*"],
             effect=iam.Effect.ALLOW,
             resources=["*"]
         ))
+
+        # Wrap the project in an action
         build_action = actions.CodeBuildAction(
             action_name="BuildAction",
             input=source_output,
             project=pipeline_project
         )
+
+        # Set up the CodePipeline
         pipeline = codepipeline.Pipeline(
             self,
             "pipeline",
@@ -86,5 +102,7 @@ class PipelineStack(core.Stack):
             pipeline_name="odmcs-pipeline",
             restart_execution_on_update=True
         )
+
+        # Add stages to the pipeline
         pipeline.add_stage(stage_name="Source", actions=[github_repo])
         pipeline.add_stage(stage_name="Build", actions=[build_action])
