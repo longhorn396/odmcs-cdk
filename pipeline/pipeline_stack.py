@@ -66,11 +66,7 @@ class PipelineStack(core.Stack):
                     },
                     "build": {
                         "commands": [
-                            "cdk diff || (cdk deploy '*')"
-                        ]
-                    },
-                    "post_build": {
-                        "commands": [
+                            "cdk diff || (cdk deploy '*')",
                             "cdk diff"
                         ]
                     }
