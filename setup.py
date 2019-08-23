@@ -23,6 +23,7 @@ setuptools.setup(
         "aws-cdk.aws_codebuild",
         "aws-cdk.aws_codepipeline",
         "aws-cdk.aws_codepipeline_actions",
+        "aws-cdk.aws_ec2",
         "aws-cdk.aws_iam",
         "aws-cdk.aws_s3"
     ],

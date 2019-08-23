@@ -16,11 +16,11 @@ class PipelineStack(core.Stack):
     AWS CodePipeline and supporting resources
     """
 
-    def __init__(self, scope, unique_id, **kwargs):
+    def __init__(self, scope=None, name=None, *, env=None, stack_name=None, tags=None):
         """
         Construct resources
         """
-        super().__init__(scope, unique_id, **kwargs)
+        super().__init__(scope=scope, name=name, env=env, stack_name=stack_name, tags=tags)
 
         # Artifact passed from one stage to the next
         source_output = codepipeline.Artifact("SourceOutput")
@@ -40,7 +40,8 @@ class PipelineStack(core.Stack):
         # CodeBuild Project to go into the pipeline
         pipeline_project = codebuild.PipelineProject(
             self,
-            "project",
+            f"{name}-build",
+            badge=False,
             build_spec=codebuild.BuildSpec.from_object({
                 "version": "0.2",
                 "phases": {
@@ -78,7 +79,7 @@ class PipelineStack(core.Stack):
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_2_0
             ),
-            project_name="odmcs-build"
+            project_name=f"{name}-build"
         )
 
         # Grant CloudFormation permissions to the project
@@ -98,13 +99,13 @@ class PipelineStack(core.Stack):
         # Set up the CodePipeline
         pipeline = codepipeline.Pipeline(
             self,
-            "pipeline",
+            f"{name}-pipeline",
             artifact_bucket=s3.Bucket.from_bucket_name(
                 self,
                 "artifact-bucket",
                 "ddrawhorn-artifacts"
             ),
-            pipeline_name="odmcs-pipeline",
+            pipeline_name=f"{name}-pipeline",
             restart_execution_on_update=True
         )
 
