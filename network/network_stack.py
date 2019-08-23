@@ -18,6 +18,7 @@ class NetworkStack(core.Stack):
         """
         super().__init__(scope=scope, name=name, env=env, stack_name=stack_name, tags=tags)
 
+        # Create the VPC
         vpc = ec2.Vpc(
             self,
             f"{name}-vpc",
@@ -25,16 +26,20 @@ class NetworkStack(core.Stack):
             enable_dns_support=True,
             enable_dns_hostnames=True,
             max_azs=1,
-            nat_gateways=0
+            nat_gateways=0,
+            subnet_configuration=[ec2.SubnetConfiguration(
+                name=f"{name}-subnet",
+                subnet_type=ec2.SubnetType.PUBLIC,
+                cidr_mask=28
+            )]
         )
-        sec_group = ec2.SecurityGroup(
+
+        # Find the default Security Group and add a rule to it
+        ec2.SecurityGroup.from_security_group_id(
             self,
             f"{name}-sg",
-            vpc=vpc,
-            allow_all_outbound=True,
-            description="Minecraft traffic"
-        )
-        sec_group.add_ingress_rule(
+            security_group_id=vpc.vpc_default_security_group
+        ).add_ingress_rule(
             ec2.Peer.any_ipv4(),
             ec2.Port.tcp(25565),
             description="Port that the Minecraft server communicates on"
