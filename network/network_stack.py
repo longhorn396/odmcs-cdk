@@ -44,3 +44,5 @@ class NetworkStack(core.Stack):
             ec2.Port.tcp(25565),
             description="Port that the Minecraft server communicates on"
         )
+
+        self.subnet = vpc.public_subnets[0].subnet_id

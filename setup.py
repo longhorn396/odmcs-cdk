@@ -15,7 +15,7 @@ setuptools.setup(
 
     author="author",
 
-    package_dir={"": "pipeline"},
+    package_dir={"": "."},
     packages=setuptools.find_packages(where="odmcs_cdk"),
 
     install_requires=[
