@@ -52,6 +52,6 @@ class InstanceStack(core.Stack):
             image_id=ami,
             instance_type=ec2.InstanceType.of(ec2.InstanceClass.STANDARD5, ec2.InstanceSize.LARGE).to_string(),
             subnet_id=subnet,
-            user_data=user_data.render(),
+            user_data=core.Fn.base64(user_data.render()),
             tags=[{"key": "Name", "value": f"{name}-server"}]
         )
